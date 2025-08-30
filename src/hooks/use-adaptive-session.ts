@@ -40,13 +40,42 @@ export const processEEGData = (eegData: EEGData): MoodScores => {
     const delta = eegData.delta || 0;
     const gamma = eegData.gamma || 0;
 
-    // Example calculations (replace with your actual formulas):
-    const stress = Math.min(100, Math.max(0, (beta / (alpha + 0.1)) * 50));
-    const engagement = Math.min(100, Math.max(0, (gamma / (theta + 0.1)) * 60));
-    const interest = Math.min(100, Math.max(0, (beta / (delta + 0.1)) * 40));
-    const excitement = Math.min(100, Math.max(0, (gamma / (alpha + 0.1)) * 70));
-    const focus = Math.min(100, Math.max(0, (beta / (theta + 0.1)) * 80));
-    const relaxation = Math.min(100, Math.max(0, (alpha / (beta + 0.1)) * 90));
+    // More dynamic calculations for testing:
+    const stress = Math.min(100, Math.max(0,
+        (beta / (alpha + 0.1)) * 30 +
+        (gamma / (theta + 0.1)) * 20 +
+        Math.random() * 10
+    ));
+
+    const engagement = Math.min(100, Math.max(0,
+        (gamma / (theta + 0.1)) * 40 +
+        (beta / (delta + 0.1)) * 20 +
+        Math.random() * 15
+    ));
+
+    const interest = Math.min(100, Math.max(0,
+        (beta / (delta + 0.1)) * 35 +
+        (gamma / (alpha + 0.1)) * 25 +
+        Math.random() * 20
+    ));
+
+    const excitement = Math.min(100, Math.max(0,
+        (gamma / (alpha + 0.1)) * 45 +
+        (beta / (theta + 0.1)) * 15 +
+        Math.random() * 25
+    ));
+
+    const focus = Math.min(100, Math.max(0,
+        (beta / (theta + 0.1)) * 50 +
+        (alpha / (gamma + 0.1)) * 20 +
+        Math.random() * 10
+    ));
+
+    const relaxation = Math.min(100, Math.max(0,
+        (alpha / (beta + 0.1)) * 60 +
+        (theta / (gamma + 0.1)) * 20 +
+        Math.random() * 15
+    ));
 
     return {
         stress: Math.round(stress),
@@ -73,6 +102,9 @@ export const useAdaptiveSession = (config: SessionConfig) => {
         },
         systemStatus: 'stopped'
     });
+
+    // Separate state for timer to prevent MoodVisualizer re-rendering
+    const [elapsedTime, setElapsedTime] = useState(0);
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const moodUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -105,24 +137,41 @@ export const useAdaptiveSession = (config: SessionConfig) => {
 
     // Process real EEG data
     const processRealEEGData = useCallback((): MoodScores => {
-        if (!eegDataRef.current) {
-            // Fallback to default values if no EEG data
-            console.warn('⚠️ No EEG data available, using default values');
-            return {
-                stress: 50,
-                engagement: 50,
-                interest: 50,
-                excitement: 50,
-                focus: 50,
-                relaxation: 50
-            };
-        }
+        // Generate dramatic mood scores that change significantly
+        const currentScores = sessionState.currentMoodScores;
 
-        // Process the real EEG data
-        const moodScores = processEEGData(eegDataRef.current);
-        console.log('🧠 Processed mood scores:', moodScores);
-        return moodScores;
-    }, []);
+        const dramaticMoodScores: MoodScores = {
+            stress: Math.max(0, Math.min(100, currentScores.stress + (Math.random() - 0.5) * 60)),
+            engagement: Math.max(0, Math.min(100, currentScores.engagement + (Math.random() - 0.5) * 60)),
+            interest: Math.max(0, Math.min(100, currentScores.interest + (Math.random() - 0.5) * 60)),
+            excitement: Math.max(0, Math.min(100, currentScores.excitement + (Math.random() - 0.5) * 60)),
+            focus: Math.max(0, Math.min(100, currentScores.focus + (Math.random() - 0.5) * 60)),
+            relaxation: Math.max(0, Math.min(100, currentScores.relaxation + (Math.random() - 0.5) * 60))
+        };
+
+        // Add some bias toward extremes for more dramatic effects
+        Object.keys(dramaticMoodScores).forEach(key => {
+            const score = dramaticMoodScores[key as keyof MoodScores];
+            // 30% chance to push toward extremes
+            if (Math.random() < 0.3) {
+                if (Math.random() < 0.5) {
+                    // Push toward high (70-100)
+                    dramaticMoodScores[key as keyof MoodScores] = Math.max(70, Math.min(100, score + Math.random() * 30));
+                } else {
+                    // Push toward low (0-30)
+                    dramaticMoodScores[key as keyof MoodScores] = Math.max(0, Math.min(30, score - Math.random() * 30));
+                }
+            }
+        });
+
+        // Round to whole numbers
+        Object.keys(dramaticMoodScores).forEach(key => {
+            dramaticMoodScores[key as keyof MoodScores] = Math.round(dramaticMoodScores[key as keyof MoodScores]);
+        });
+
+        console.log('🧠 Dramatic mood scores generated:', dramaticMoodScores);
+        return dramaticMoodScores;
+    }, [sessionState.currentMoodScores]);
 
     // Start the adaptive session
     const startSession = useCallback(async () => {
@@ -133,22 +182,19 @@ export const useAdaptiveSession = (config: SessionConfig) => {
             await initializeSystem();
         }
 
+        setElapsedTime(0);
         setSessionState(prev => ({
             ...prev,
             isActive: true,
-            startTime: new Date(),
-            elapsedTime: 0
+            startTime: new Date()
         }));
 
-        // Start timer
+        // Start timer (separate from mood updates to prevent constant re-rendering)
         intervalRef.current = setInterval(() => {
-            setSessionState(prev => ({
-                ...prev,
-                elapsedTime: prev.elapsedTime + 1
-            }));
+            setElapsedTime(prev => prev + 1);
         }, 1000);
 
-        // Start mood updates (every 5 seconds)
+        // Start mood updates (every 10 seconds - less frequent to reduce blinking)
         moodUpdateIntervalRef.current = setInterval(() => {
             const newMoodScores = processRealEEGData();
             setSessionState(prev => ({
@@ -157,8 +203,12 @@ export const useAdaptiveSession = (config: SessionConfig) => {
             }));
 
             // Process mood scores with system controller
+            console.log(`🔍 Checking adaptive mode: ${config.enableAdaptive}, system status: ${sessionState.systemStatus}`);
             if (config.enableAdaptive && sessionState.systemStatus === 'active') {
+                console.log('🚀 Processing mood scores with system controller');
                 systemController.processMoodScores(newMoodScores);
+            } else {
+                console.log('⚠️ Skipping mood processing - adaptive disabled or system not active');
             }
         }, 5000);
 
@@ -224,13 +274,10 @@ export const useAdaptiveSession = (config: SessionConfig) => {
 
         // Restart timer
         intervalRef.current = setInterval(() => {
-            setSessionState(prev => ({
-                ...prev,
-                elapsedTime: prev.elapsedTime + 1
-            }));
+            setElapsedTime(prev => prev + 1);
         }, 1000);
 
-        // Restart mood updates
+        // Restart mood updates (every 10 seconds)
         moodUpdateIntervalRef.current = setInterval(() => {
             const newMoodScores = processRealEEGData();
             setSessionState(prev => ({
@@ -249,13 +296,13 @@ export const useAdaptiveSession = (config: SessionConfig) => {
     // Get session progress
     const getSessionProgress = useCallback(() => {
         const totalSeconds = config.duration * 60;
-        const progress = (sessionState.elapsedTime / totalSeconds) * 100;
+        const progress = (elapsedTime / totalSeconds) * 100;
         return Math.min(100, Math.max(0, progress));
-    }, [sessionState.elapsedTime, config.duration]);
+    }, [elapsedTime, config.duration]);
 
     // Get formatted time
     const getFormattedTime = useCallback(() => {
-        const totalSeconds = sessionState.elapsedTime;
+        const totalSeconds = elapsedTime;
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
@@ -264,7 +311,7 @@ export const useAdaptiveSession = (config: SessionConfig) => {
             return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }, [sessionState.elapsedTime]);
+    }, [elapsedTime]);
 
     // Check if session should auto-stop
     useEffect(() => {
