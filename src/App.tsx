@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import ContentFilterConfig from "./pages/ContentFilterConfig";
 import RavenMatricesPage from "./raven_matrices/RavenMatricesPage";
 import DailySudoku from "./daily_puzzles/DailySudoku";
+import AvoidingBrainrot from "./components/AvoidingBrainrot";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/puzzles" element={<Puzzles />} />
           <Route path="/raven-matrices" element={<RavenMatricesPage />} />
           <Route path="/daily-puzzles" element={<DailySudoku />} />
+          <Route path="/avoiding-brainrot" element={<AvoidingBrainrot />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
