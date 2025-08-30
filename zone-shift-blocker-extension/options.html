@@ -23,6 +23,14 @@
     <button id="add-btn" class="add-btn">Add</button>
   </div>
   <div class="site-list" id="site-list"></div>
+  <script type="module">
+    import { showStressPopup } from './high_stress/popup.js';
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 's' && !e.repeat) {
+        showStressPopup();
+      }
+    });
+  </script>
   <script src="options.js"></script>
 </body>
 </html>

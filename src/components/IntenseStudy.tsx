@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useAdaptiveSession } from "@/hooks/use-adaptive-session";
 import MoodVisualizer from "./MoodVisualizer";
 import { eegIntegration } from "@/lib/eeg-integration";
+import HighStressPopup from "@/high_stress/HighStressPopup";
+import { isHighStress } from "@/high_stress/highStressUtils";
 
 const IntenseStudy = () => {
   const [enableAdaptive, setEnableAdaptive] = useState(true);
   const [sessionDuration, setSessionDuration] = useState(60); // minutes
   const [eegConnected, setEegConnected] = useState(false);
   const [eegDeviceType, setEegDeviceType] = useState<'muse' | 'neurosky' | 'openbci' | 'custom'>('custom');
+  const [showHighStress, setShowHighStress] = useState(false);
   const { toast } = useToast();
 
   // Initialize adaptive session
@@ -147,8 +150,38 @@ const IntenseStudy = () => {
     }
   };
 
+  const prevStressRef = useRef<number | undefined>(undefined);
+
+  // Show popup if stress score > 0.8 (future EEG integration)
+  useEffect(() => {
+    const currentStress = sessionState.currentMoodScores?.stress;
+    const prevStress = prevStressRef.current;
+    if (
+      typeof currentStress === 'number' &&
+      typeof prevStress === 'number' &&
+      prevStress <= 0.8 &&
+      currentStress > 0.8 &&
+      !showHighStress
+    ) {
+      setShowHighStress(true);
+    }
+    prevStressRef.current = currentStress;
+  }, [sessionState.currentMoodScores?.stress, showHighStress]);
+
+  // Keyboard shortcut: press 's' to trigger popup
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 's' || e.key === 'S') {
+        setShowHighStress(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="min-h-screen p-6">
+      <HighStressPopup open={showHighStress} onClose={() => setShowHighStress(false)} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
