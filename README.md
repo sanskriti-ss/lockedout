@@ -13,7 +13,7 @@ npm i
 npm run dev
 ```
 
-### To install the extension (optional)
+### To install the web-blocking extension (optional)
 1. Go to Chrome
 2. Enable "Developer mode" (top right).
 3. Click "Load unpacked" and select the zone-shift-blocker-extension folder in your project.
