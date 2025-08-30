@@ -111,18 +111,22 @@ export class SystemController {
 
     // Process Stress levels
     private async processStress(score: number): Promise<void> {
+        console.log(`🎯 Processing stress score: ${score}`);
         if (score < 30) { // Low stress
             this.currentState.musicType = 'lofi';
-            this.currentState.brightness = Math.max(this.currentState.brightness, 70);
-            this.currentState.volume = Math.max(this.currentState.volume, 40);
+            this.currentState.brightness = 70; // Set to specific value
+            this.currentState.volume = 40;
+            console.log(`💡 Low stress detected - setting brightness to 70`);
         } else if (score > 70) { // High stress
             this.currentState.overlay = 'breathing';
             this.currentState.notifications = false;
-            this.currentState.brightness = Math.min(this.currentState.brightness, 40);
-            this.currentState.volume = Math.min(this.currentState.volume, 20);
+            this.currentState.brightness = 40; // Set to specific value
+            this.currentState.volume = 20;
+            console.log(`💡 High stress detected - setting brightness to 40`);
         } else { // Medium stress
-            this.currentState.brightness = Math.min(this.currentState.brightness, 60);
-            this.currentState.volume = Math.min(this.currentState.volume, 30);
+            this.currentState.brightness = 60; // Set to specific value
+            this.currentState.volume = 30;
+            console.log(`💡 Medium stress detected - setting brightness to 60`);
         }
     }
 
@@ -139,7 +143,7 @@ export class SystemController {
     // Process Interest levels
     private async processInterest(score: number): Promise<void> {
         if (score < 30) { // Low interest
-            this.currentState.brightness = Math.max(this.currentState.brightness, 80);
+            this.currentState.brightness = 80; // Set to specific value
             this.currentState.overlay = 'none';
             // Auto-cycle visual stimuli could be implemented here
         } else if (score > 70) { // High interest
@@ -152,10 +156,10 @@ export class SystemController {
     private async processExcitement(score: number): Promise<void> {
         if (score < 30) { // Low excitement
             this.currentState.musicType = 'upbeat';
-            this.currentState.volume = Math.max(this.currentState.volume, 50);
+            this.currentState.volume = 50; // Set to specific value
         } else if (score > 70) { // High excitement
             this.currentState.musicType = 'white-noise';
-            this.currentState.volume = Math.min(this.currentState.volume, 25);
+            this.currentState.volume = 25; // Set to specific value
             this.currentState.colorFilter = 'dark';
         } else { // Medium excitement
             this.currentState.musicType = 'ambient';
