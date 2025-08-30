@@ -12,11 +12,33 @@ import MeditationProgress from "./components/MeditationProgress";
 import Puzzles from "./components/Puzzles";
 import NotFound from "./pages/NotFound";
 import ContentFilterConfig from "./pages/ContentFilterConfig";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import RavenMatricesPage from "./raven_matrices/RavenMatricesPage";
 import DailySudoku from "./daily_puzzles/DailySudoku";
 import AvoidingBrainrot from "./components/AvoidingBrainrot";
 
 const queryClient = new QueryClient();
+
+function CallbackHandler() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get('access_token');
+      
+      if (accessToken) {
+        localStorage.setItem('spotify_access_token', accessToken);
+        navigate('/'); // Redirect back to main page
+      }
+    }
+  }, [navigate]);
+
+  return <div>Authenticating with Spotify...</div>;
+}
+
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

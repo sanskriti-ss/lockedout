@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
+import SpotifyPlayer from 'react-spotify-web-playback';
 import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
@@ -83,6 +84,9 @@ const IntenseStudy = () => {
       });
     }
   };
+
+  const token = import.meta.env.VITE_SPOTIFY_TOKEN;
+  console.log(token)
 
   // Disconnect EEG device
   const disconnectEEG = () => {
@@ -203,6 +207,10 @@ const IntenseStudy = () => {
 
   return (
     <div className="min-h-screen p-6">
+      <SpotifyPlayer
+        token={token}
+        uris={['spotify:artist:6HQYnRM4OzToCYPpVBInuU']}
+      />
       <HighStressPopup open={showHighStress} onClose={() => setShowHighStress(false)} />
       <LowEnergyPopup open={showLowEnergy} onClose={() => setShowLowEnergy(false)} />
       <div className="max-w-6xl mx-auto">
