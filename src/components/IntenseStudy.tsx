@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Pause, Volume2, Sun, Shield, CheckCircle } from "lucide-react";
+import { ArrowLeft, Play, Pause, Volume2, Sun, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const IntenseStudy = () => {
@@ -136,9 +136,9 @@ const IntenseStudy = () => {
                 onClick={handleActivateMode}
                 className={`w-full ${
                   isActive 
-                    ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' 
-                    : 'bg-gradient-intense hover:shadow-intense'
-                } text-white transition-all duration-300`}
+                    ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white' 
+                    : 'bg-gradient-intense hover:shadow-intense text-black'
+                }  transition-all duration-300`}
                 size="lg"
               >
                 {isActive ? 'Deactivate Study Mode' : 'Activate Study Mode'}
@@ -160,7 +160,7 @@ const IntenseStudy = () => {
               onClick={action.action}
             >
               <CardContent className="p-6">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 h-[110px]">
                   <div className={`p-3 rounded-xl ${
                     action.active 
                       ? 'bg-gradient-intense shadow-lg' 
@@ -173,9 +173,6 @@ const IntenseStudy = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="font-semibold">{action.title}</h3>
-                      {action.active && (
-                        <CheckCircle className="w-4 h-4 text-intense" />
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {action.description}
@@ -183,16 +180,17 @@ const IntenseStudy = () => {
                   </div>
                 </div>
 
-                <div className="mt-4">
+                <div className="flex flex-col h-full">
                   <Button
                     variant={action.active ? "default" : "outline"}
                     size="sm"
-                    className={action.active 
-                      ? "bg-gradient-intense hover:shadow-lg text-white" 
-                      : ""
-                    }
+                    className={`w-60 mt-auto ${
+                      action.active
+                        ? "bg-gradient-intense hover:shadow-lg text-black"
+                        : "text-white"
+                    }`}
                   >
-                    {action.active ? 'Active' : 'Activate'}
+                    {action.active ? "Active" : "Activate"}
                   </Button>
                 </div>
               </CardContent>

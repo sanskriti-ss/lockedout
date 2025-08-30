@@ -136,7 +136,7 @@ const HomePage = () => {
 
                 <Link to={`/${mode.id}`} className="block">
                   <Button 
-                    className={`w-full ${mode.gradient} hover:shadow-lg transition-all duration-300 hover:shadow-${mode.color}/20 text-white border-0`}
+                    className={`w-full ${mode.gradient} hover:shadow-lg transition-all duration-300 hover:shadow-${mode.color}/20 text-black border-0`}
                   >
                     Start {mode.title}
                   </Button>
