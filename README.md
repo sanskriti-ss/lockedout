@@ -20,6 +20,8 @@ If you're too sad, you'll get a pop-up (with a cute photo from a folder that you
 ## Presentation
 Available here: https://www.canva.com/design/DAGxlagFFeE/G03NogGfIw47XpYjo7nxMA/view?utm_content=DAGxlagFFeE&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hc083f42593
 
+
+## Customize, locally
 ### To install the web-blocking extension (optional)
 1. Go to Chrome
 2. Enable "Developer mode" (top right).
@@ -30,3 +32,6 @@ Available here: https://www.canva.com/design/DAGxlagFFeE/G03NogGfIw47XpYjo7nxMA/
 7. Add domains (e.g., facebook.com, twitter.com) and click "Add".
 When your list is ready, click "Sync to Extension".
 You should see a success alert if the extension is installed and running.
+
+### To point the folder to your own photo album
+Option 1: drag and drop any photos of your choice into here: lockedout/src/high_stress/friend_pics
