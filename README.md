@@ -13,6 +13,13 @@ npm i
 npm run dev
 ```
 
+## Main features
+If you're too stressed, you'll get a pop-up (with a cute animal photo) recommending that you take a walk.
+If you're too sad, you'll get a pop-up (with a cute photo from a folder that you can set locally) recommending that you talk to a friend.
+
+## Presentation
+Available here: https://www.canva.com/design/DAGxlagFFeE/G03NogGfIw47XpYjo7nxMA/view?utm_content=DAGxlagFFeE&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hc083f42593
+
 ### To install the web-blocking extension (optional)
 1. Go to Chrome
 2. Enable "Developer mode" (top right).
