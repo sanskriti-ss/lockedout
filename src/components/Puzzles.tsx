@@ -69,21 +69,6 @@ const Puzzles = () => {
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 rounded-xl bg-gradient-puzzle">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="font-semibold">Daily Challenges</h3>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                New puzzles and challenges every day
-              </p>
-              <Button variant="outline" size="sm">Today's Challenge</Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-gradient-puzzle">
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="font-semibold">Raven's Matrices</h3>
@@ -107,6 +92,21 @@ const Puzzles = () => {
                 Track your progress and earn rewards
               </p>
               <Button variant="outline" size="sm">View Trophies</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-gradient-puzzle">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-semibold">Daily Puzzles</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                New puzzles every day. From sudoku, to matching games.
+              </p>
+              <Button variant="outline" size="sm" onClick={() => navigate("/daily-puzzles")}>Today's Sudoku</Button>
             </CardContent>
           </Card>
         </div>

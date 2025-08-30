@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { ravenQuestions, RavenQuestion } from "./questions";
+import MoodReportChart from "./MoodReportChart";
 
 const RavenMatricesPage: React.FC = () => {
   const [step, setStep] = useState(0);
@@ -32,21 +33,44 @@ const RavenMatricesPage: React.FC = () => {
     }, 900);
   };
 
+  // --- Synthetic EEG data for demo ---
+  function getRandomMoodValues() {
+    return {
+      stress: Math.floor(Math.random() * 40 + 30),
+      focus: Math.floor(Math.random() * 40 + 30),
+      relaxation: Math.floor(Math.random() * 40 + 30),
+      engagement: Math.floor(Math.random() * 40 + 30),
+      excitement: Math.floor(Math.random() * 40 + 30),
+      interest: Math.floor(Math.random() * 40 + 30)
+    };
+  }
+  // Generate synthetic mood data for each question
+  const easyMoodData: Record<string, number[]> = { stress: [], focus: [], relaxation: [], engagement: [], excitement: [], interest: [] };
+  const hardMoodData: Record<string, number[]> = { stress: [], focus: [], relaxation: [], engagement: [], excitement: [], interest: [] };
+  for (let i = 0; i < questions.length; i++) {
+    const mood = getRandomMoodValues();
+    const target = i < 5 ? easyMoodData : hardMoodData;
+    Object.keys(mood).forEach((k) => target[k].push(mood[k]));
+  }
+
   if (showResult) {
     return (
       <div className="min-h-screen p-6 flex flex-col items-center justify-center">
-        <Card className="max-w-lg w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl">Raven's Matrices Results</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-center">
-            <div className="text-4xl font-bold">{score} / {questions.length}</div>
-            <div className="text-lg">{score >= 8 ? "Excellent!" : score >= 5 ? "Good job!" : "Keep practicing!"}</div>
-            <Link to="/puzzles">
-              <Button className="mt-4">Back to Puzzles</Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="max-w-5xl w-full">
+          <Card className="max-w-2xl w-full">
+            <CardHeader>
+              <CardTitle className="text-2xl">Raven's Matrices Results</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-center">
+              <div className="text-4xl font-bold">{score} / {questions.length}</div>
+              <div className="text-lg">{score >= 8 ? "Excellent!" : score >= 5 ? "Good job!" : "Keep practicing!"}</div>
+              <MoodReportChart easy={easyMoodData} hard={hardMoodData} />
+              <Link to="/puzzles">
+                <Button className="mt-4">Back to Puzzles</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

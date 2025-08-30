@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 const Meditation = () => {
   const [isActive, setIsActive] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleActivateMode = () => {
     setIsActive(!isActive);
@@ -105,7 +106,7 @@ const Meditation = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Track your mindfulness journey and habits
               </p>
-              <Button variant="outline" size="sm">View Progress</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/meditation/progress")}>View Progress</Button>
             </CardContent>
           </Card>
         </div>
