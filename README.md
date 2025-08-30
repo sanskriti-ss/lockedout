@@ -1,4 +1,4 @@
-# Lockedout
+# LockedOut
 All-in-one personal assistant.
 Uses eeg data in order to help you meditate, do brain puzzles, and focus on your work.
 
