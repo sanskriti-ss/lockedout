@@ -101,8 +101,7 @@ const HomePage = () => {
           {modes.map((mode, index) => (
             <Card 
               key={mode.id}
-              className="group hover:shadow-card-custom transition-all duration-300 hover:scale-105 bg-card border-border/50 overflow-hidden float"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="group hover:shadow-card-custom transition-all duration-300 hover:scale-105 bg-card border-border/50 overflow-hidden"
             >
               <div className={`h-2 ${mode.gradient}`} />
               
