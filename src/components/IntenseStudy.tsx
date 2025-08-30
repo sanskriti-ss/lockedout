@@ -3,89 +3,153 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Pause, Volume2, Sun, Shield, CheckCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  ArrowLeft,
+  Play,
+  Pause,
+  Volume2,
+  Sun,
+  Shield,
+  CheckCircle,
+  Brain,
+  Settings,
+  Activity,
+  Zap
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAdaptiveSession } from "@/hooks/use-adaptive-session";
+import MoodVisualizer from "./MoodVisualizer";
+import { eegIntegration } from "@/lib/eeg-integration";
 
 const IntenseStudy = () => {
-  const [isActive, setIsActive] = useState(false);
-  const [spotifyActive, setSpotifyActive] = useState(false);
-  const [brightnessActive, setBrightnessActive] = useState(false);
-  const [discordBlocked, setDiscordBlocked] = useState(false);
+  const [enableAdaptive, setEnableAdaptive] = useState(true);
+  const [sessionDuration, setSessionDuration] = useState(60); // minutes
+  const [eegConnected, setEegConnected] = useState(false);
+  const [eegDeviceType, setEegDeviceType] = useState<'muse' | 'neurosky' | 'openbci' | 'custom'>('custom');
   const { toast } = useToast();
 
-  const handleActivateMode = () => {
-    if (!isActive) {
-      // Simulate activating all features
-      setTimeout(() => setSpotifyActive(true), 500);
-      setTimeout(() => setBrightnessActive(true), 1000);
-      setTimeout(() => setDiscordBlocked(true), 1500);
-      
+  // Initialize adaptive session
+  const {
+    sessionState,
+    startSession,
+    stopSession,
+    pauseSession,
+    resumeSession,
+    getSessionProgress,
+    getFormattedTime,
+    initializeSystem,
+    updateEEGData
+  } = useAdaptiveSession({
+    duration: sessionDuration,
+    mode: 'intense-study',
+    enableAdaptive
+  });
+
+  // Connect to EEG device
+  const connectEEG = async () => {
+    try {
+      // Set up EEG data callback
+      eegIntegration.setDataCallback(updateEEGData);
+
+      // Initialize EEG connection
+      const success = await eegIntegration.initialize(eegDeviceType);
+      if (success) {
+        setEegConnected(true);
+        eegIntegration.startStreaming();
+        toast({
+          title: "EEG Device Connected",
+          description: `Connected to ${eegIntegration.getConnectionStatus().deviceName}`,
+        });
+      } else {
+        toast({
+          title: "EEG Connection Failed",
+          description: "Please check your device and try again",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Intense Study Mode Activated",
-        description: "All systems optimized for deep focus",
-      });
-    } else {
-      // Deactivate all features
-      setSpotifyActive(false);
-      setBrightnessActive(false);
-      setDiscordBlocked(false);
-      
-      toast({
-        title: "Intense Study Mode Deactivated",
-        description: "Normal settings restored",
+        title: "EEG Connection Error",
+        description: "Failed to connect to EEG device",
+        variant: "destructive"
       });
     }
-    setIsActive(!isActive);
   };
 
-  const actions = [
-    {
-      id: "spotify",
-      title: "Focus Playlist",
-      description: "Play deep focus soundtrack from Spotify",
-      icon: Volume2,
-      active: spotifyActive,
-      action: () => {
-        setSpotifyActive(!spotifyActive);
-        toast({
-          title: spotifyActive ? "Music Stopped" : "Playing Focus Playlist",
-          description: spotifyActive ? "Spotify playback paused" : "Deep focus beats now playing",
-        });
-      }
-    },
-    {
-      id: "brightness",
-      title: "Optimize Brightness",
-      description: "Increase screen brightness for better focus",
-      icon: Sun,
-      active: brightnessActive,
-      action: () => {
-        setBrightnessActive(!brightnessActive);
-        toast({
-          title: brightnessActive ? "Brightness Normalized" : "Brightness Optimized",
-          description: brightnessActive ? "Screen brightness restored" : "Brightness increased to 85%",
-        });
-      }
-    },
-    {
-      id: "discord",
-      title: "Block Discord",
-      description: "Block access to discord.com during study session",
-      icon: Shield,
-      active: discordBlocked,
-      action: () => {
-        setDiscordBlocked(!discordBlocked);
-        toast({
-          title: discordBlocked ? "Discord Unblocked" : "Discord Blocked",
-          description: discordBlocked ? "Access to Discord restored" : "Discord.com is now blocked",
-        });
-      }
+  // Disconnect EEG device
+  const disconnectEEG = () => {
+    eegIntegration.disconnect();
+    setEegConnected(false);
+    toast({
+      title: "EEG Device Disconnected",
+      description: "EEG device has been disconnected",
+    });
+  };
+
+  const handleStartSession = async () => {
+    try {
+      await startSession();
+      toast({
+        title: "Intense Study Session Started",
+        description: "Adaptive system is now monitoring your mood and optimizing your environment",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to Start Session",
+        description: "Please check system permissions and try again",
+        variant: "destructive"
+      });
     }
-  ];
+  };
+
+  const handleStopSession = () => {
+    stopSession();
+    toast({
+      title: "Session Ended",
+      description: "All adaptive features have been disabled",
+    });
+  };
+
+  const handlePauseSession = () => {
+    pauseSession();
+    toast({
+      title: "Session Paused",
+      description: "Adaptive features temporarily disabled",
+    });
+  };
+
+  const handleResumeSession = () => {
+    resumeSession();
+    toast({
+      title: "Session Resumed",
+      description: "Adaptive features reactivated",
+    });
+  };
+
+  const getStatusColor = () => {
+    switch (sessionState.systemStatus) {
+      case 'active': return 'text-green-500';
+      case 'initializing': return 'text-yellow-500';
+      case 'error': return 'text-red-500';
+      default: return 'text-gray-500';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (sessionState.systemStatus) {
+      case 'active': return 'System Active';
+      case 'initializing': return 'Initializing...';
+      case 'error': return 'System Error';
+      default: return 'System Stopped';
+    }
+  };
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link to="/">
@@ -93,28 +157,127 @@ const IntenseStudy = () => {
               <ArrowLeft className="w-4 h-4" />
             </Button>
           </Link>
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold bg-gradient-intense bg-clip-text text-transparent">
               Intense Study Mode
             </h1>
             <p className="text-muted-foreground">
-              Maximum focus configuration for deep learning sessions
+              AI-powered adaptive environment for maximum focus and productivity
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Activity className={`w-4 h-4 ${getStatusColor()}`} />
+            <span className={`text-sm font-medium ${getStatusColor()}`}>
+              {getStatusText()}
+            </span>
           </div>
         </div>
 
-        {/* Status Badge */}
-        <div className="mb-8">
-          <Badge 
-            className={`px-4 py-2 text-sm font-medium ${
-              isActive 
-                ? 'bg-gradient-intense text-white' 
-                : 'bg-muted text-muted-foreground'
-            }`}
-          >
-            {isActive ? 'Active' : 'Inactive'}
-          </Badge>
-        </div>
+        {/* Session Configuration */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              Session Configuration
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label htmlFor="adaptive-mode">Adaptive Mode</Label>
+                <p className="text-sm text-muted-foreground">
+                  Automatically adjust environment based on EEG mood data
+                </p>
+              </div>
+              <Switch
+                id="adaptive-mode"
+                checked={enableAdaptive}
+                onCheckedChange={setEnableAdaptive}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="duration">Session Duration: {sessionDuration} minutes</Label>
+              <input
+                id="duration"
+                type="range"
+                min="15"
+                max="180"
+                step="15"
+                value={sessionDuration}
+                onChange={(e) => setSessionDuration(Number(e.target.value))}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>15 min</span>
+                <span>180 min</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* EEG Device Configuration */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5" />
+              EEG Device Configuration
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label>EEG Device Type</Label>
+                <p className="text-sm text-muted-foreground">
+                  Select your EEG headset type
+                </p>
+              </div>
+              <select
+                value={eegDeviceType}
+                onChange={(e) => setEegDeviceType(e.target.value as any)}
+                className="px-3 py-2 border rounded-md"
+                disabled={eegConnected}
+              >
+                <option value="custom">Custom Device</option>
+                <option value="muse">Muse Headset</option>
+                <option value="neurosky">NeuroSky MindWave</option>
+                <option value="openbci">OpenBCI</option>
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label>EEG Connection</Label>
+                <p className="text-sm text-muted-foreground">
+                  {eegConnected ? 'Connected' : 'Not connected'}
+                </p>
+              </div>
+              {!eegConnected ? (
+                <Button onClick={connectEEG} variant="outline">
+                  Connect EEG Device
+                </Button>
+              ) : (
+                <Button onClick={disconnectEEG} variant="destructive">
+                  Disconnect
+                </Button>
+              )}
+            </div>
+
+            {eegConnected && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                <div className="flex items-center gap-2 text-green-800">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">
+                    Connected to {eegIntegration.getConnectionStatus().deviceName}
+                  </span>
+                </div>
+                <p className="text-xs text-green-600 mt-1">
+                  Data rate: {eegIntegration.getConnectionStatus().dataRate}Hz
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Main Control Panel */}
         <Card className="mb-8 bg-gradient-intense p-1">
@@ -122,103 +285,181 @@ const IntenseStudy = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gradient-intense">
-                  {isActive ? (
+                  {sessionState.isActive ? (
                     <Pause className="w-5 h-5 text-white" />
                   ) : (
                     <Play className="w-5 h-5 text-white" />
                   )}
                 </div>
-                Master Control
+                Session Control
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={handleActivateMode}
-                className={`w-full ${
-                  isActive 
-                    ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' 
-                    : 'bg-gradient-intense hover:shadow-intense'
-                } text-white transition-all duration-300`}
-                size="lg"
-              >
-                {isActive ? 'Deactivate Study Mode' : 'Activate Study Mode'}
-              </Button>
+            <CardContent className="space-y-4">
+              {/* Session Progress */}
+              {sessionState.isActive && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Session Progress</span>
+                    <span>{getSessionProgress().toFixed(1)}%</span>
+                  </div>
+                  <Progress value={getSessionProgress()} className="h-2" />
+                  <div className="text-center text-2xl font-bold text-intense">
+                    {getFormattedTime()}
+                  </div>
+                </div>
+              )}
+
+              {/* Control Buttons */}
+              <div className="flex gap-3">
+                {!sessionState.isActive ? (
+                  <Button
+                    onClick={handleStartSession}
+                    className="flex-1 bg-gradient-intense hover:shadow-intense text-white"
+                    size="lg"
+                    disabled={sessionState.systemStatus === 'initializing'}
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Start Session
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handlePauseSession}
+                      variant="outline"
+                      className="flex-1"
+                      size="lg"
+                    >
+                      <Pause className="w-4 h-4 mr-2" />
+                      Pause
+                    </Button>
+                    <Button
+                      onClick={handleStopSession}
+                      variant="destructive"
+                      className="flex-1"
+                      size="lg"
+                    >
+                      Stop Session
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              {!sessionState.isActive && sessionState.startTime && (
+                <Button
+                  onClick={handleResumeSession}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Resume Session
+                </Button>
+              )}
             </CardContent>
           </div>
         </Card>
 
-        {/* Action Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {actions.map((action) => (
-            <Card 
-              key={action.id}
-              className={`transition-all duration-300 cursor-pointer ${
-                action.active 
-                  ? 'bg-gradient-intense/10 border-intense shadow-lg' 
-                  : 'hover:shadow-md bg-card'
-              }`}
-              onClick={action.action}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-xl ${
-                    action.active 
-                      ? 'bg-gradient-intense shadow-lg' 
-                      : 'bg-muted'
-                  } transition-all duration-300`}>
-                    <action.icon className={`w-5 h-5 ${
-                      action.active ? 'text-white' : 'text-muted-foreground'
-                    }`} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold">{action.title}</h3>
-                      {action.active && (
-                        <CheckCircle className="w-4 h-4 text-intense" />
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {action.description}
-                    </p>
+        {/* Mood Visualization */}
+        {enableAdaptive && (
+          <div className="mb-8">
+            <MoodVisualizer
+              scores={sessionState.currentMoodScores}
+              isActive={sessionState.isActive}
+            />
+          </div>
+        )}
+
+        {/* Adaptive Features Status */}
+        {sessionState.isActive && enableAdaptive && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="w-5 h-5" />
+                Active Adaptive Features
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                  <Brain className="w-5 h-5 text-green-600" />
+                  <div>
+                    <div className="font-medium text-green-800">EEG Monitoring</div>
+                    <div className="text-sm text-green-600">Real-time mood analysis</div>
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <Button
-                    variant={action.active ? "default" : "outline"}
-                    size="sm"
-                    className={action.active 
-                      ? "bg-gradient-intense hover:shadow-lg text-white" 
-                      : ""
-                    }
-                  >
-                    {action.active ? 'Active' : 'Activate'}
-                  </Button>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                  <Sun className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <div className="font-medium text-blue-800">Brightness Control</div>
+                    <div className="text-sm text-blue-600">Adaptive screen brightness</div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        {/* Session Stats */}
-        {isActive && (
-          <Card className="mt-8 bg-gradient-intense/5 border-intense/20">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50 border border-purple-200">
+                  <Volume2 className="w-5 h-5 text-purple-600" />
+                  <div>
+                    <div className="font-medium text-purple-800">Audio Control</div>
+                    <div className="text-sm text-purple-600">Smart music selection</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-50 border border-orange-200">
+                  <Shield className="w-5 h-5 text-orange-600" />
+                  <div>
+                    <div className="font-medium text-orange-800">Distraction Blocking</div>
+                    <div className="text-sm text-orange-600">Website blocking</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 border border-indigo-200">
+                  <CheckCircle className="w-5 h-5 text-indigo-600" />
+                  <div>
+                    <div className="font-medium text-indigo-800">Notifications</div>
+                    <div className="text-sm text-indigo-600">Smart alerts</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-pink-50 border border-pink-200">
+                  <Activity className="w-5 h-5 text-pink-600" />
+                  <div>
+                    <div className="font-medium text-pink-800">Overlays</div>
+                    <div className="text-sm text-pink-600">Breathing & Pomodoro</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Session Statistics */}
+        {sessionState.isActive && (
+          <Card className="bg-gradient-intense/5 border-intense/20">
             <CardHeader>
               <CardTitle className="text-intense">Session Statistics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-6 text-center">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-intense">00:25:32</div>
-                  <div className="text-sm text-muted-foreground">Time Focused</div>
+                  <div className="text-2xl font-bold text-intense">{getFormattedTime()}</div>
+                  <div className="text-sm text-muted-foreground">Time Elapsed</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-intense">7</div>
-                  <div className="text-sm text-muted-foreground">Distractions Blocked</div>
+                  <div className="text-2xl font-bold text-intense">
+                    {getSessionProgress().toFixed(1)}%
+                  </div>
+                  <div className="text-sm text-muted-foreground">Progress</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-intense">98%</div>
+                  <div className="text-2xl font-bold text-intense">
+                    {sessionState.currentMoodScores.focus}
+                  </div>
                   <div className="text-sm text-muted-foreground">Focus Score</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-intense">
+                    {sessionState.currentMoodScores.stress}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Stress Level</div>
                 </div>
               </div>
             </CardContent>
