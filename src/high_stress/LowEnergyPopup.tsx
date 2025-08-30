@@ -2,11 +2,9 @@ import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-// Instead of Unsplash, use local friend_pics PNGs (Vite-compatible import)
-const FRIEND_PICS = [
-  new URL("./friend_pics/toothless.png", import.meta.url).href
-  // Add more PNGs here as you add them to friend_pics
-];
+// Dynamically import all PNGs in friend_pics (Vite import.meta.glob)
+const friendPicModules = import.meta.glob('./friend_pics/*.png', { eager: true, import: 'default' });
+const FRIEND_PICS = Object.values(friendPicModules) as string[];
 
 function getRandomFriendPic() {
   return FRIEND_PICS[Math.floor(Math.random() * FRIEND_PICS.length)];
