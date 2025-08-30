@@ -58,6 +58,15 @@ const HomePage = () => {
       gradient: "bg-gradient-puzzle", 
       color: "puzzle",
       features: ["Daily Challenges", "Progress Analytics", "Skill Building"]
+    },
+    {
+      id: "avoiding-brainrot",
+      title: "Avoiding Brainrot",
+      description: "Stay mindful, get time reminders, and connect with friends",
+      icon: Activity,
+      gradient: "bg-gradient-to-r from-fuchsia-500 to-rose-500",
+      color: "meditate",
+      features: ["10-min Time Popups", "Book/Show Suggestions", "Friends Online"]
     }
   ];
 

@@ -8,12 +8,15 @@ import IntenseStudy from "./components/IntenseStudy";
 import CasualStudy from "./components/CasualStudy";
 import CasualBrowsing from "./components/CasualBrowsing";
 import Meditation from "./components/Meditation";
+import MeditationProgress from "./components/MeditationProgress";
 import Puzzles from "./components/Puzzles";
 import NotFound from "./pages/NotFound";
 import ContentFilterConfig from "./pages/ContentFilterConfig";
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import RavenMatricesPage from "./raven_matrices/RavenMatricesPage";
+import DailySudoku from "./daily_puzzles/DailySudoku";
+import AvoidingBrainrot from "./components/AvoidingBrainrot";
 
 const queryClient = new QueryClient();
 
@@ -50,7 +53,11 @@ const App = () => (
           <Route path="/casual-browsing" element={<CasualBrowsing />} />
           <Route path="/casual-browsing/content-filter" element={<ContentFilterConfig />} />
           <Route path="/meditation" element={<Meditation />} />
+          <Route path="/meditation/progress" element={<MeditationProgress />} />
           <Route path="/puzzles" element={<Puzzles />} />
+          <Route path="/raven-matrices" element={<RavenMatricesPage />} />
+          <Route path="/daily-puzzles" element={<DailySudoku />} />
+          <Route path="/avoiding-brainrot" element={<AvoidingBrainrot />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

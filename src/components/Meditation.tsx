@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 const Meditation = () => {
   const [isActive, setIsActive] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleActivateMode = () => {
     setIsActive(!isActive);
@@ -105,9 +106,31 @@ const Meditation = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Track your mindfulness journey and habits
               </p>
-              <Button variant="outline" size="sm">View Progress</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/meditation/progress")}>View Progress</Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Meditation Resources Section */}
+        <div className="mt-12">
+          <h2 className="text-xl font-semibold mb-4 text-center md:text-left">Explore Meditation Resources</h2>
+          <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+            <a href="https://thinkingwithdavid.com/getting-started-meditation-guide" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-gradient-meditate text-black px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all">
+                Getting Started with Meditation
+              </Button>
+            </a>
+            <a href="https://www.buddhanet.net/v_guide/" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-gradient-meditate text-black px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all">
+                Vipassana Meditation Guide
+              </Button>
+            </a>
+            <a href="https://www.tarabrach.com/wp-content/uploads/pdf/Walking-Meditation-Instructions.pdf" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-gradient-meditate text-black px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all">
+                Walking Meditation Instructions
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

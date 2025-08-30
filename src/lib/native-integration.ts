@@ -31,6 +31,7 @@ export class NativeIntegration {
     };
 
     private wakeLock: any = null;
+    private lastBrightness: number = 50;
 
     // Initialize and check system capabilities
     async initialize(): Promise<boolean> {
@@ -113,14 +114,49 @@ export class NativeIntegration {
         }
 
         try {
-            // Simulate brightness control with CSS
-            // In a real implementation, this would use native APIs
             const normalizedLevel = Math.max(0, Math.min(100, level));
-            const brightnessValue = normalizedLevel / 50; // 0-2 range
 
-            document.documentElement.style.filter = `brightness(${brightnessValue})`;
+            // Only change brightness if it's significantly different (prevent flickering)
+            if (Math.abs(normalizedLevel - this.lastBrightness) < 5) {
+                return true; // Skip small changes
+            }
 
-            console.log(`💡 Brightness set to ${normalizedLevel}%`);
+            this.lastBrightness = normalizedLevel;
+
+            // Create or update a brightness overlay that doesn't affect UI cards
+            let brightnessOverlay = document.getElementById('brightness-overlay');
+            if (!brightnessOverlay) {
+                brightnessOverlay = document.createElement('div');
+                brightnessOverlay.id = 'brightness-overlay';
+                brightnessOverlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    pointer-events: none;
+                    z-index: 9998;
+                    transition: opacity 0.3s ease;
+                `;
+                document.body.appendChild(brightnessOverlay);
+            }
+
+            // Calculate overlay opacity based on brightness level
+            let opacity = 0;
+            if (normalizedLevel < 50) {
+                // Darken the page
+                opacity = (50 - normalizedLevel) / 100;
+                brightnessOverlay.style.background = `rgba(0, 0, 0, ${opacity})`;
+            } else if (normalizedLevel > 50) {
+                // Brighten the page
+                opacity = (normalizedLevel - 50) / 100;
+                brightnessOverlay.style.background = `rgba(255, 255, 255, ${opacity})`;
+            } else {
+                // Normal brightness
+                brightnessOverlay.style.background = 'transparent';
+            }
+
+            console.log(`💡 Full page brightness set to ${normalizedLevel}% (overlay opacity: ${opacity.toFixed(2)}) - Previous: ${this.lastBrightness}`);
             return true;
         } catch (error) {
             console.error('❌ Failed to set brightness:', error);
@@ -312,6 +348,12 @@ export class NativeIntegration {
     destroy(): void {
         if (this.wakeLock) {
             this.releaseScreenWakeLock();
+        }
+
+        // Remove brightness overlay
+        const brightnessOverlay = document.getElementById('brightness-overlay');
+        if (brightnessOverlay) {
+            brightnessOverlay.remove();
         }
 
         // Reset any applied filters

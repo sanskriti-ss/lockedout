@@ -9,20 +9,20 @@
     /* Base colors */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    
+
     /* Brand colors - Soft pastels */
     --primary: 240 30% 75%;
     --primary-glow: 250 35% 85%;
     --secondary: 280 25% 80%;
     --accent: 320 30% 85%;
-    
+
     /* Mode-specific colors */
     --intense: 240 25% 75%;
     --casual: 200 30% 80%;
     --browse: 180 25% 75%;
     --meditate: 120 30% 75%;
     --puzzle: 45 35% 80%;
-    
+
     /* UI Components */
     --card: 240 8% 8%;
     --card-foreground: 0 0% 98%;
@@ -33,7 +33,7 @@
     --muted-foreground: 240 5% 65%;
     --destructive: 0 62.8% 60%;
     --destructive-foreground: 0 0% 98%;
-    
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-intense: linear-gradient(135deg, hsl(240 25% 75%), hsl(260 30% 80%));
@@ -42,16 +42,16 @@
     --gradient-meditate: linear-gradient(135deg, hsl(120 30% 75%), hsl(140 35% 80%));
     --gradient-puzzle: linear-gradient(135deg, hsl(45 35% 80%), hsl(60 30% 85%));
     --gradient-hero: linear-gradient(135deg, hsl(240 30% 75%) 0%, hsl(280 25% 80%) 50%, hsl(320 30% 85%) 100%);
-    
+
     /* Shadows and Effects */
     --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
     --shadow-intense: 0 10px 30px hsl(240 25% 75% / 0.3);
     --shadow-card: 0 8px 32px hsl(240 10% 3.9% / 0.6);
-    
+
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
+
     --radius: 1rem;
   }
 
@@ -75,45 +75,60 @@
 }
 
 @layer components {
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: hsl(var(--muted));
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--primary));
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary-glow));
   }
-  
+
   /* Glow animations */
   .glow-pulse {
     animation: glow-pulse 2s ease-in-out infinite alternate;
   }
-  
+
+  /* Ensure cards stay above brightness overlay */
+  .card {
+    position: relative;
+    z-index: 10000;
+  }
+
   @keyframes glow-pulse {
     from {
       box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
     }
+
     to {
       box-shadow: 0 0 40px hsl(var(--primary) / 0.6);
     }
   }
-  
+
   /* Floating animation */
   .float {
     animation: float 6s ease-in-out infinite;
   }
-  
+
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
   }
 }

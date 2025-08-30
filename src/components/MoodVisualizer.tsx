@@ -99,17 +99,16 @@ const MoodVisualizer: React.FC<MoodVisualizerProps> = ({ scores, isActive }) => 
                     {moodTypes.map(({ key, label }) => {
                         const score = scores[key];
                         const Icon = getMoodIcon(key);
+                        const status = getMoodStatus(key, score);
                         const colorClass = getMoodColor(key, score);
                         const progressColor = getProgressColor(key, score);
-                        const status = getMoodStatus(key, score);
 
                         return (
                             <div
                                 key={key}
-                                className={`p-4 rounded-lg border transition-all duration-300 ${isActive ? 'animate-pulse' : ''
-                                    } ${status === 'high' ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-200' :
-                                        status === 'medium' ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200' :
-                                            'bg-gradient-to-br from-red-50 to-red-100 border-red-200'
+                                className={`p-4 rounded-lg border transition-all duration-500 ease-in-out ${status === 'high' ? 'bg-gradient-to-br from-green-900/20 to-green-800/20 border-green-600/30' :
+                                    status === 'medium' ? 'bg-gradient-to-br from-yellow-900/20 to-yellow-800/20 border-yellow-600/30' :
+                                        'bg-gradient-to-br from-red-900/20 to-red-800/20 border-red-600/30'
                                     }`}
                             >
                                 <div className="flex items-center justify-between mb-3">
@@ -117,14 +116,14 @@ const MoodVisualizer: React.FC<MoodVisualizerProps> = ({ scores, isActive }) => 
                                         <Icon className={`w-4 h-4 ${colorClass}`} />
                                         <span className="font-medium text-sm">{label}</span>
                                     </div>
-                                    <span className={`text-lg font-bold ${colorClass}`}>
+                                    <span className={`text-lg font-bold transition-colors duration-500 ease-in-out ${colorClass}`}>
                                         {score}
                                     </span>
                                 </div>
 
                                 <Progress
                                     value={score}
-                                    className="h-2 mb-2"
+                                    className="h-2 mb-2 transition-all duration-500 ease-in-out"
                                     style={{
                                         '--progress-color': progressColor
                                     } as React.CSSProperties}
@@ -148,7 +147,7 @@ const MoodVisualizer: React.FC<MoodVisualizerProps> = ({ scores, isActive }) => 
                 </div>
 
                 {/* Summary Section */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg border border-blue-600/30">
                     <h3 className="font-semibold mb-2 flex items-center gap-2">
                         <Heart className="w-4 h-4 text-red-500" />
                         Current State Summary
@@ -185,4 +184,10 @@ const MoodVisualizer: React.FC<MoodVisualizerProps> = ({ scores, isActive }) => 
     );
 };
 
-export default MoodVisualizer; 
+export default React.memo(MoodVisualizer, (prevProps, nextProps) => {
+    // Only re-render if scores or isActive actually changed
+    return (
+        prevProps.isActive === nextProps.isActive &&
+        JSON.stringify(prevProps.scores) === JSON.stringify(nextProps.scores)
+    );
+}); 

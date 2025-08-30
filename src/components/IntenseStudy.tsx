@@ -32,7 +32,7 @@ const IntenseStudy = () => {
   const [enableAdaptive, setEnableAdaptive] = useState(true);
   const [sessionDuration, setSessionDuration] = useState(60); // minutes
   const [eegConnected, setEegConnected] = useState(false);
-  const [eegDeviceType, setEegDeviceType] = useState<'muse' | 'neurosky' | 'openbci' | 'custom'>('custom');
+  const [eegDeviceType, setEegDeviceType] = useState<'mw20' | 'epocx' | 'flexsaline' | 'flexgel' | 'insight' | 'mn8' | 'xtrodes'>('mw20');
   const [showHighStress, setShowHighStress] = useState(false);
   const [showLowEnergy, setShowLowEnergy] = useState(false);
   const { toast } = useToast();
@@ -299,13 +299,16 @@ const IntenseStudy = () => {
               <select
                 value={eegDeviceType}
                 onChange={(e) => setEegDeviceType(e.target.value as any)}
-                className="px-3 py-2 border rounded-md"
+                className="px-3 py-2 border rounded-md bg-card text-foreground border-border"
                 disabled={eegConnected}
               >
-                <option value="custom">Custom Device</option>
-                <option value="muse">Muse Headset</option>
-                <option value="neurosky">NeuroSky MindWave</option>
-                <option value="openbci">OpenBCI</option>
+                <option value="mw20">MW20 – 2 Channel EEG Earbuds</option>
+                <option value="epocx">EPOC X - 14 Channel EEG Headset</option>
+                <option value="flexsaline">FLEX Saline - 32 Channel EEG Headset</option>
+                <option value="flexgel">FLEX Gel - 32 Channel EEG Headset</option>
+                <option value="insight">Insight - 5 Channel EEG Headset</option>
+                <option value="mn8">MN8 - 2 Channel EEG Headphones</option>
+                <option value="xtrodes">X-trodes Powered by EmotivPRO</option>
               </select>
             </div>
 
@@ -328,14 +331,14 @@ const IntenseStudy = () => {
             </div>
 
             {eegConnected && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                <div className="flex items-center gap-2 text-green-800">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="p-3 bg-green-900/20 border border-green-600/30 rounded-md">
+                <div className="flex items-center gap-2 text-green-200">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium">
                     Connected to {eegIntegration.getConnectionStatus().deviceName}
                   </span>
                 </div>
-                <p className="text-xs text-green-600 mt-1">
+                <p className="text-xs text-green-300 mt-1">
                   Data rate: {eegIntegration.getConnectionStatus().dataRate}Hz
                 </p>
               </div>
@@ -443,51 +446,51 @@ const IntenseStudy = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <Brain className="w-5 h-5 text-green-600" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-green-900/20 border border-green-600/30">
+                  <Brain className="w-5 h-5 text-green-400" />
                   <div>
-                    <div className="font-medium text-green-800">EEG Monitoring</div>
-                    <div className="text-sm text-green-600">Real-time mood analysis</div>
+                    <div className="font-medium text-green-200">EEG Monitoring</div>
+                    <div className="text-sm text-green-300">Real-time mood analysis</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                  <Sun className="w-5 h-5 text-blue-600" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-900/20 border border-blue-600/30">
+                  <Sun className="w-5 h-5 text-blue-400" />
                   <div>
-                    <div className="font-medium text-blue-800">Brightness Control</div>
-                    <div className="text-sm text-blue-600">Adaptive screen brightness</div>
+                    <div className="font-medium text-blue-200">Brightness Control</div>
+                    <div className="text-sm text-blue-300">Adaptive screen brightness</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50 border border-purple-200">
-                  <Volume2 className="w-5 h-5 text-purple-600" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-900/20 border border-purple-600/30">
+                  <Volume2 className="w-5 h-5 text-purple-400" />
                   <div>
-                    <div className="font-medium text-purple-800">Audio Control</div>
-                    <div className="text-sm text-purple-600">Smart music selection</div>
+                    <div className="font-medium text-purple-200">Audio Control</div>
+                    <div className="text-sm text-purple-300">Smart music selection</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-50 border border-orange-200">
-                  <Shield className="w-5 h-5 text-orange-600" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-900/20 border border-orange-600/30">
+                  <Shield className="w-5 h-5 text-orange-400" />
                   <div>
-                    <div className="font-medium text-orange-800">Distraction Blocking</div>
-                    <div className="text-sm text-orange-600">Website blocking</div>
+                    <div className="font-medium text-orange-200">Distraction Blocking</div>
+                    <div className="text-sm text-orange-300">Website blocking</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 border border-indigo-200">
-                  <CheckCircle className="w-5 h-5 text-indigo-600" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-indigo-900/20 border border-indigo-600/30">
+                  <CheckCircle className="w-5 h-5 text-indigo-400" />
                   <div>
-                    <div className="font-medium text-indigo-800">Notifications</div>
-                    <div className="text-sm text-indigo-600">Smart alerts</div>
+                    <div className="font-medium text-indigo-200">Notifications</div>
+                    <div className="text-sm text-indigo-300">Smart alerts</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-pink-50 border border-pink-200">
-                  <Activity className="w-5 h-5 text-pink-600" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-pink-900/20 border border-pink-600/30">
+                  <Activity className="w-5 h-5 text-pink-400" />
                   <div>
-                    <div className="font-medium text-pink-800">Overlays</div>
-                    <div className="text-sm text-pink-600">Breathing & Pomodoro</div>
+                    <div className="font-medium text-pink-200">Overlays</div>
+                    <div className="text-sm text-pink-300">Breathing & Pomodoro</div>
                   </div>
                 </div>
               </div>
