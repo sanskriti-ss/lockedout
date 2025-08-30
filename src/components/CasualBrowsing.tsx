@@ -21,20 +21,19 @@ const CasualBrowsing = () => {
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/">
-            <Button variant="outline" size="sm" className="bg-card">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-browse bg-clip-text text-transparent">
+        {/* Hero Section */}
+        <div className="text-center mb-12 space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <div className="p-3 rounded-2xl bg-gradient-browse glow-pulse">
+              <Globe className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-browse bg-clip-text text-transparent">
               Casual Browsing Mode
             </h1>
-            <p className="text-muted-foreground">
-              Mindful internet exploration with gentle guidance
-            </p>
           </div>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Mindful internet exploration with gentle guidance
+          </p>
         </div>
 
         <Badge className={`mb-8 px-4 py-2 ${isActive ? 'bg-gradient-browse text-white' : 'bg-muted text-muted-foreground'}`}>
