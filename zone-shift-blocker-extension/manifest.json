@@ -3,7 +3,7 @@
   "name": "Zone Shift Blocker",
   "version": "1.0",
   "description": "Blocks harmful websites during Casual Browsing mode.",
-  "permissions": ["storage", "webRequest", "webRequestBlocking"],
+  "permissions": ["storage", "declarativeNetRequest", "declarativeNetRequestWithHostAccess"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
@@ -12,5 +12,6 @@
     "16": "icon16.png",
     "48": "icon48.png",
     "128": "icon128.png"
-  }
+  },
+  "options_page": "options.html"
 }
