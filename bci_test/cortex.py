@@ -129,7 +129,7 @@ class Cortex(Dispatcher):
         # sslopt = {'ca_certs': "../certificates/rootCA.pem", "cert_reqs": ssl.CERT_REQUIRED}
         sslopt={"cert_reqs": ssl.CERT_NONE}
 
-        self.websock_thread  = threading.Thread(target=self.ws.run_forever, args=(None, sslopt), name=thread_name)
+        self.websock_thread  = threading.Thread(target=self.ws.run_forever, kwargs={'sslopt': sslopt}, name=thread_name)
         self.websock_thread .start()
         self.websock_thread.join()
 
@@ -273,7 +273,14 @@ class Cortex(Dispatcher):
                 print('load profile successfully')
                 self.emit('load_unload_profile_done', isLoaded=True)
             elif action == 'unload':
-                self.emit('load_unload_profile_done', isLoaded=False)
+                print('unload profile successfully')
+                # After unloading a profile, check if we need to load our desired profile
+                unloaded_profile = result_dic.get('name', '')
+                if hasattr(self, 'profile_name') and self.profile_name and unloaded_profile != self.profile_name:
+                    print(f'Loading desired profile: {self.profile_name}')
+                    self.setup_profile(self.profile_name, 'load')
+                else:
+                    self.emit('load_unload_profile_done', isLoaded=False)
             elif action == 'save':
                 self.emit('save_profile_done')
         elif req_id == GET_CURRENT_PROFILE_ID:
@@ -286,13 +293,21 @@ class Cortex(Dispatcher):
             else:
                 loaded_by_this_app = result_dic['loadedByThisApp']
                 print('get current profile rsp: ' + name + ", loadedByThisApp: " + str(loaded_by_this_app))
-                if name != self.profile_name:
-                    warnings.warn("There is profile " + name + " is loaded for headset " + self.headset_id)
-                elif loaded_by_this_app == True:
-                    self.emit('load_unload_profile_done', isLoaded=True)
+                if name == self.profile_name:
+                    # Correct profile is loaded
+                    if loaded_by_this_app == True:
+                        # Perfect - we loaded it
+                        self.emit('load_unload_profile_done', isLoaded=True)
+                    else:
+                        # Profile is loaded by another app, but it's the right one
+                        # We can still proceed, just emit the loaded event
+                        print(f"Profile {name} is loaded by another app, but proceeding...")
+                        self.emit('load_unload_profile_done', isLoaded=True)
                 else:
-                    self.setup_profile(self.profile_name, 'unload')
-                    # warnings.warn("The profile " + name + " is loaded by other applications")
+                    # Wrong profile is loaded
+                    warnings.warn("There is profile " + name + " is loaded for headset " + self.headset_id)
+                    # Try to unload the wrong profile and load the correct one
+                    self.setup_profile(name, 'unload')
         elif req_id == DISCONNECT_HEADSET_ID:
             print("Disconnect headset " + self.headset_id)
             self.headset_id = ''

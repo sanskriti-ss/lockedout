@@ -15,8 +15,8 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'Your Spotify Key'
 
-SPOTIFY_CLIENT_ID = 'Your Spotify Client ID'
-SPOTIFY_CLIENT_SECRET = 'Your Spotify Client ID'
+SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
+SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
 REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI", "http://127.0.0.1:5000/callback")
 
 AUTH_URL = "https://accounts.spotify.com/authorize"
@@ -31,7 +31,7 @@ access_token_global = None
 # -----------------------------
 EMOTIV_CLIENT_ID = os.getenv("CLIENT_ID", "")
 EMOTIV_CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")
-PROFILE_NAME = os.getenv("PROFILE_NAME", "TRAW spins")
+PROFILE_NAME = os.getenv("PROFILE_NAME", "clyde0513")  # Using the profile with your trained actions
 HEADSET_ID = os.getenv("HEADSET_ID", "")  # optional
 
 def _require_config():
