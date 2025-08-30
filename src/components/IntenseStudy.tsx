@@ -41,7 +41,7 @@ const IntenseStudy = () => {
   const [spotifyId, setSpotifyId] = useState('7kEHF8x9dHDohbqUJYXdHk');
   useEffect(() => {
     if (spotifyType === "playlist") {
-      setSpotifyId("7kEHF8x9dHDohbqUJYXdHk");
+      setSpotifyId("7LkHvjrBhyd5vLwncLahJA");
     } else if (spotifyType === "artist") {
       setSpotifyId("6qqNVTkY8uBg9cP3Jd7DAH");
     } else if (spotifyType === "album") {
