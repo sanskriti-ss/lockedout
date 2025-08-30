@@ -85,10 +85,10 @@ const Puzzles = () => {
                 <div className="p-3 rounded-xl bg-gradient-puzzle">
                   <Brain className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-semibold">Skill Building</h3>
+                <h3 className="font-semibold">Raven's Matrices</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Targeted exercises for cognitive improvement
+                Get a personalized report of your brain activity.
               </p>
               <Button variant="outline" size="sm">Training Plan</Button>
             </CardContent>
