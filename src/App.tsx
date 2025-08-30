@@ -10,6 +10,7 @@ import CasualBrowsing from "./components/CasualBrowsing";
 import Meditation from "./components/Meditation";
 import Puzzles from "./components/Puzzles";
 import NotFound from "./pages/NotFound";
+import ContentFilterConfig from "./pages/ContentFilterConfig";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/intense-study" element={<IntenseStudy />} />
           <Route path="/casual-study" element={<CasualStudy />} />
           <Route path="/casual-browsing" element={<CasualBrowsing />} />
+          <Route path="/casual-browsing/content-filter" element={<ContentFilterConfig />} />
           <Route path="/meditation" element={<Meditation />} />
           <Route path="/puzzles" element={<Puzzles />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

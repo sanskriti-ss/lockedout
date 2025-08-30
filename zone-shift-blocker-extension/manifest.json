@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Zone Shift Blocker",
+  "version": "1.0",
+  "description": "Blocks harmful websites during Casual Browsing mode.",
+  "permissions": ["storage", "webRequest", "webRequestBlocking"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

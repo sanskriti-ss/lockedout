@@ -90,7 +90,9 @@ const CasualBrowsing = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Filter out distracting or harmful content
               </p>
-              <Button variant="outline" size="sm">Configure</Button>
+              <Link to="/casual-browsing/content-filter">
+                <Button variant="outline" size="sm">Configure</Button>
+              </Link>
             </CardContent>
           </Card>
 
