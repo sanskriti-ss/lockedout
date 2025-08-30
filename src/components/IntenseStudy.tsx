@@ -24,6 +24,7 @@ import { useAdaptiveSession } from "@/hooks/use-adaptive-session";
 import MoodVisualizer from "./MoodVisualizer";
 import { eegIntegration } from "@/lib/eeg-integration";
 import HighStressPopup from "@/high_stress/HighStressPopup";
+import LowEnergyPopup from "@/high_stress/LowEnergyPopup";
 import { isHighStress } from "@/high_stress/highStressUtils";
 
 const IntenseStudy = () => {
@@ -32,6 +33,7 @@ const IntenseStudy = () => {
   const [eegConnected, setEegConnected] = useState(false);
   const [eegDeviceType, setEegDeviceType] = useState<'muse' | 'neurosky' | 'openbci' | 'custom'>('custom');
   const [showHighStress, setShowHighStress] = useState(false);
+  const [showLowEnergy, setShowLowEnergy] = useState(false);
   const { toast } = useToast();
 
   // Initialize adaptive session
@@ -151,6 +153,7 @@ const IntenseStudy = () => {
   };
 
   const prevStressRef = useRef<number | undefined>(undefined);
+  const prevFocusRef = useRef<number | undefined>(undefined);
 
   // Show popup if stress score > 0.8 (future EEG integration)
   useEffect(() => {
@@ -168,11 +171,30 @@ const IntenseStudy = () => {
     prevStressRef.current = currentStress;
   }, [sessionState.currentMoodScores?.stress, showHighStress]);
 
-  // Keyboard shortcut: press 's' to trigger popup
+  // Show low energy popup if focus drops below threshold
+  useEffect(() => {
+    const currentFocus = sessionState.currentMoodScores?.focus;
+    const prevFocus = prevFocusRef.current;
+    if (
+      typeof currentFocus === 'number' &&
+      typeof prevFocus === 'number' &&
+      prevFocus >= 0.2 &&
+      currentFocus < 0.2 &&
+      !showLowEnergy
+    ) {
+      setShowLowEnergy(true);
+    }
+    prevFocusRef.current = currentFocus;
+  }, [sessionState.currentMoodScores?.focus, showLowEnergy]);
+
+  // Keyboard shortcuts: 's' for stress, 'd' for low energy
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 's' || e.key === 'S') {
         setShowHighStress(true);
+      }
+      if (e.key === 'd' || e.key === 'D') {
+        setShowLowEnergy(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -182,6 +204,7 @@ const IntenseStudy = () => {
   return (
     <div className="min-h-screen p-6">
       <HighStressPopup open={showHighStress} onClose={() => setShowHighStress(false)} />
+      <LowEnergyPopup open={showLowEnergy} onClose={() => setShowLowEnergy(false)} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
