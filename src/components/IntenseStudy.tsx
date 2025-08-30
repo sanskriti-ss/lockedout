@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import SpotifyPlayer from 'react-spotify-web-playback';
 import { Label } from "@/components/ui/label";
+
 import {
   ArrowLeft,
   Play,
@@ -35,6 +36,21 @@ const IntenseStudy = () => {
   const [eegDeviceType, setEegDeviceType] = useState<'mw20' | 'epocx' | 'flexsaline' | 'flexgel' | 'insight' | 'mn8' | 'xtrodes'>('mw20');
   const [showHighStress, setShowHighStress] = useState(false);
   const [showLowEnergy, setShowLowEnergy] = useState(false);
+
+  const [spotifyType, setSpotifyType] = useState<'playlist' | 'artist' | 'album'>('playlist');
+  const [spotifyId, setSpotifyId] = useState('7kEHF8x9dHDohbqUJYXdHk');
+  useEffect(() => {
+    if (spotifyType === "playlist") {
+      setSpotifyId("7kEHF8x9dHDohbqUJYXdHk");
+    } else if (spotifyType === "artist") {
+      setSpotifyId("6qqNVTkY8uBg9cP3Jd7DAH");
+    } else if (spotifyType === "album") {
+      setSpotifyId("3iPSVi54hsacKKl1xIR2eH");
+    }
+  }, [spotifyType]);
+
+  const spotifyUri = `spotify:${spotifyType}:${spotifyId}`;
+
   const { toast } = useToast();
 
   // Initialize adaptive session
@@ -207,10 +223,6 @@ const IntenseStudy = () => {
 
   return (
     <div className="min-h-screen p-6">
-      <SpotifyPlayer
-        token={token}
-        uris={['spotify:artist:6HQYnRM4OzToCYPpVBInuU']}
-      />
       <HighStressPopup open={showHighStress} onClose={() => setShowHighStress(false)} />
       <LowEnergyPopup open={showLowEnergy} onClose={() => setShowLowEnergy(false)} />
       <div className="max-w-6xl mx-auto">
@@ -532,6 +544,63 @@ const IntenseStudy = () => {
             </CardContent>
           </Card>
         )}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Volume2 className="w-5 h-5" />
+              Spotify Selection
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Label htmlFor="spotify-type">Type</Label>
+            <div className="flex gap-2">
+              <select
+                id="spotify-type"
+                value={spotifyType}
+                onChange={(e) => setSpotifyType(e.target.value as any)}
+                className="px-3 py-2 border rounded-md bg-card text-foreground border-border"
+              >
+                <option value="playlist">Playlist</option>
+                <option value="artist">Artist</option>
+                <option value="album">Album</option>
+              </select>
+              <input
+                id="spotify-id"
+                type="text"
+                value={spotifyId}
+                onChange={(e) => setSpotifyId(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md bg-card text-foreground border-border"
+                placeholder={
+                  spotifyType === "playlist"
+                    ? "Playlist ID (e.g. 7kEHF8x9dHDohbqUJYXdHk)"
+                    : spotifyType === "artist"
+                    ? "Artist ID (e.g. 6HQYnRM4OzToCYPpVBInuU)"
+                    : "Album ID (e.g. 1ATL5GLyefJaxhQzSPVrLX)"
+                }
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Choose type and enter Spotify ID to play during your session.
+            </p>
+          </CardContent>
+        </Card>
+        <SpotifyPlayer
+          styles={{
+            activeColor: '#fff',
+            bgColor: 'transparent',
+            color: '#fff',
+            loaderColor: '#fff',
+            sliderColor: '#1cb954',
+            sliderHandleColor: '#fff',
+            trackArtistColor: '#ccc',
+            trackNameColor: '#fff',
+          }}
+          // preloadData={true}
+          syncExternalDevice={true}
+          syncExternalDeviceInterval={5}
+          token={token}
+          uris={[spotifyUri]}
+        />
       </div>
     </div>
   );
