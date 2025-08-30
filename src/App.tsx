@@ -11,6 +11,7 @@ import Meditation from "./components/Meditation";
 import Puzzles from "./components/Puzzles";
 import NotFound from "./pages/NotFound";
 import ContentFilterConfig from "./pages/ContentFilterConfig";
+import RavenMatricesPage from "./raven_matrices/RavenMatricesPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/casual-browsing/content-filter" element={<ContentFilterConfig />} />
           <Route path="/meditation" element={<Meditation />} />
           <Route path="/puzzles" element={<Puzzles />} />
+          <Route path="/raven-matrices" element={<RavenMatricesPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

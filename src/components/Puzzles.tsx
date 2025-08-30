@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 const Puzzles = () => {
   const [isActive, setIsActive] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleActivateMode = () => {
     setIsActive(!isActive);
@@ -90,7 +91,7 @@ const Puzzles = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Get a personalized report of your brain activity.
               </p>
-              <Button variant="outline" size="sm">Training Plan</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/raven-matrices")}>Training Plan</Button>
             </CardContent>
           </Card>
 
