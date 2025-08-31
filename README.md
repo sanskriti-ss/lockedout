@@ -14,8 +14,14 @@ npm run dev
 ```
 
 ## Main features
+We have six different modes: Intense Study, Casual Study, Casual Browsing, Meditation, Puzzles, and Brainrot Avoidance.
+
+We have inbuilt spotify playlists, that run automatically depending on your mode (e.g. geometry dash for Intense Study).
+
+We also have many important EEG features that are the main stars of our webapp:
 If you're too stressed, you'll get a pop-up (with a cute animal photo) recommending that you take a walk.
 If you're too sad, you'll get a pop-up (with a cute photo from a folder that you can set locally) recommending that you talk to a friend.
+If your focus drops, you get notifications that advise a walk.
 
 ## Presentation
 Available here: https://www.canva.com/design/DAGxlagFFeE/G03NogGfIw47XpYjo7nxMA/view
