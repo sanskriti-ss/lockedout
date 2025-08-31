@@ -11,8 +11,10 @@ import {
   Focus,
   Activity
 } from "lucide-react";
+import SpotifyPlayer from "./SpotifyCustomizedPlayer";
 
 const HomePage = () => {
+  const token = import.meta.env.VITE_SPOTIFY_TOKEN;
   const modes = [
     {
       id: "intense-study",

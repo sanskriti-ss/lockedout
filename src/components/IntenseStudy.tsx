@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import SpotifyPlayer from 'react-spotify-web-playback';
 import { Label } from "@/components/ui/label";
+import SpotifyPlayer from "./SpotifyCustomizedPlayer";
 
 import {
   ArrowLeft,
@@ -27,6 +27,7 @@ import MoodVisualizer from "./MoodVisualizer";
 import { eegIntegration } from "@/lib/eeg-integration";
 import HighStressPopup from "@/high_stress/HighStressPopup";
 import LowEnergyPopup from "@/high_stress/LowEnergyPopup";
+import MusicPopup from "@/high_stress/MusicPopup";
 import { isHighStress } from "@/high_stress/highStressUtils";
 
 const IntenseStudy = () => {
@@ -36,6 +37,8 @@ const IntenseStudy = () => {
   const [eegDeviceType, setEegDeviceType] = useState<'mw20' | 'epocx' | 'flexsaline' | 'flexgel' | 'insight' | 'mn8' | 'xtrodes'>('mw20');
   const [showHighStress, setShowHighStress] = useState(false);
   const [showLowEnergy, setShowLowEnergy] = useState(false);
+  const [showMusicPopup, setShowMusicPopup] = useState(false);
+  const [shouldPlayMusic, setShouldPlayMusic] = useState(false);
 
   const [spotifyType, setSpotifyType] = useState<'playlist' | 'artist' | 'album'>('playlist');
   const [spotifyId, setSpotifyId] = useState('7kEHF8x9dHDohbqUJYXdHk');
@@ -121,6 +124,7 @@ const IntenseStudy = () => {
         title: "Intense Study Session Started",
         description: "Adaptive system is now monitoring your mood and optimizing your environment",
       });
+      setShowMusicPopup(true);
     } catch (error) {
       toast({
         title: "Failed to Start Session",
@@ -128,6 +132,16 @@ const IntenseStudy = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleMusicYes = () => {
+    setShouldPlayMusic(true);
+    setShowMusicPopup(false);
+  };
+
+  const handleMusicNo = () => {
+    setShouldPlayMusic(false);
+    setShowMusicPopup(false);
   };
 
   const handleStopSession = () => {
@@ -225,7 +239,7 @@ const IntenseStudy = () => {
     <div className="min-h-screen p-6">
       <HighStressPopup open={showHighStress} onClose={() => setShowHighStress(false)} />
       <LowEnergyPopup open={showLowEnergy} onClose={() => setShowLowEnergy(false)} />
-      <div className="max-w-6xl mx-auto">
+      <MusicPopup open={showMusicPopup} onClose={() => setShowMusicPopup(false)} onYes={handleMusicYes} onNo={handleMusicNo} token={token} spotifyUri={spotifyUri}/>
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link to="/">
@@ -584,25 +598,14 @@ const IntenseStudy = () => {
             </p>
           </CardContent>
         </Card>
-        <SpotifyPlayer
-          styles={{
-            activeColor: '#fff',
-            bgColor: 'transparent',
-            color: '#fff',
-            loaderColor: '#fff',
-            sliderColor: '#1cb954',
-            sliderHandleColor: '#fff',
-            trackArtistColor: '#ccc',
-            trackNameColor: '#fff',
-          }}
-          // preloadData={true}
-          syncExternalDevice={true}
-          syncExternalDeviceInterval={5}
-          token={token}
-          uris={[spotifyUri]}
-        />
+        <div className="fixed right-10 bottom-10 z-50">
+          <SpotifyPlayer
+            token={token}
+            playId={spotifyUri}
+            isPlaying={shouldPlayMusic}
+          />
+        </div>
       </div>
-    </div>
   );
 };
 
