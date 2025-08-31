@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,13 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, Clock, Coffee, Music } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import MusicPopup from "@/high_stress/MusicPopup";
+import LowFocusPopup from "@/high_stress/LowFocusPopup";
 import SpotifyPlayer from "./SpotifyCustomizedPlayer";
+import { useAdaptiveSession } from "@/hooks/use-adaptive-session";
 
 const CasualStudy = () => {
   const [isActive, setIsActive] = useState(false);
   const { toast } = useToast();
   const [showMusicPopup, setShowMusicPopup] = useState(false);
   const [shouldPlayMusic, setShouldPlayMusic] = useState(false);
+  const [showLowFocus, setShowLowFocus] = useState(false);
+  const [sessionDuration, setSessionDuration] = useState(60); // minutes
+  const [enableAdaptive] = useState(false); // not used for casual, but required by hook
   const spotifyType = 'playlist';
   const spotifyId = '3OqdJY9FxLoseJKAsZxlgY';
 
@@ -39,9 +44,37 @@ const CasualStudy = () => {
 
   const token = import.meta.env.VITE_SPOTIFY_TOKEN;
 
+  // Show popup on 'f' keydown or low focus
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'f' || e.key === 'F') {
+        setShowLowFocus(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const {
+    sessionState,
+    startSession,
+    stopSession,
+    getSessionProgress,
+    getFormattedTime
+  } = useAdaptiveSession({ duration: sessionDuration, mode: 'casual-study', enableAdaptive });
+
+  // Show popup if focus drops below 0.2
+  useEffect(() => {
+    const focus = sessionState.currentMoodScores?.focus;
+    if (typeof focus === 'number' && focus < 20) {
+      setShowLowFocus(true);
+    }
+  }, [sessionState.currentMoodScores?.focus]);
+
   return (
     <div className="min-h-screen p-6">
       <MusicPopup open={showMusicPopup} onClose={() => setShowMusicPopup(false)} onYes={handleMusicYes} onNo={handleMusicNo} token={token} spotifyUri={spotifyUri}/>
+      <LowFocusPopup open={showLowFocus} onClose={() => setShowLowFocus(false)} />
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Link to="/">
