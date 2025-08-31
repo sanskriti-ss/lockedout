@@ -61,7 +61,14 @@ const MeditationProgress: React.FC = () => {
                 </svg>
               </div>
             </div>
-            <div className="text-xs text-gray-400 text-center">(Synthetic EEG band data: Delta, Theta, Alpha, Beta, Gamma)</div>
+            <div className="text-xs text-gray-400 text-center">(The brain produces different waves based on activity and mental state: delta waves (0.5–4 Hz) dominate during deep, dreamless sleep and help the body heal; theta waves (4–8 Hz) show up during light sleep, meditation, and creative daydreaming; alpha waves (8–12 Hz) appear when calm but awake and relaxed, such as during quiet reflection; beta waves (13–30 Hz) are present during focused thinking, learning, and problem solving; and gamma waves (30–100 Hz) are strongest when the brain is handling complex tasks or deep concentration, such as integrating information and experiencing heightened perception.)</div>
+            <div className="flex justify-center mt-4">
+              <a href="https://pubmed.ncbi.nlm.nih.gov/36252972/" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-gradient-meditate text-black px-6 py-2 rounded-lg shadow hover:shadow-lg transition-all">
+                  Read this scientific paper (Attar, 2024) to understand what they mean
+                </Button>
+              </a>
+            </div>
           </CardContent>
         </Card>
       </div>
