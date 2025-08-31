@@ -5,21 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, Clock, Coffee, Music } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import MusicPopup from "@/high_stress/MusicPopup";
+import SpotifyPlayer from "./SpotifyCustomizedPlayer";
 
 const CasualStudy = () => {
   const [isActive, setIsActive] = useState(false);
   const { toast } = useToast();
+  const [showMusicPopup, setShowMusicPopup] = useState(false);
+  const [shouldPlayMusic, setShouldPlayMusic] = useState(false);
+  const spotifyType = 'playlist';
+  const spotifyId = '3OqdJY9FxLoseJKAsZxlgY';
+
+  const spotifyUri = `spotify:${spotifyType}:${spotifyId}`;
 
   const handleActivateMode = () => {
     setIsActive(!isActive);
+    if (!isActive) {setShowMusicPopup(true);}
     toast({
       title: isActive ? "Casual Study Mode Deactivated" : "Casual Study Mode Activated", 
       description: isActive ? "Back to normal mode" : "Relaxed learning environment ready",
     });
   };
 
+  const handleMusicYes = () => {
+    setShouldPlayMusic(true);
+    setShowMusicPopup(false);
+  };
+
+  const handleMusicNo = () => {
+    setShouldPlayMusic(false);
+    setShowMusicPopup(false);
+  };
+
+  const token = import.meta.env.VITE_SPOTIFY_TOKEN;
+
   return (
     <div className="min-h-screen p-6">
+      <MusicPopup open={showMusicPopup} onClose={() => setShowMusicPopup(false)} onYes={handleMusicYes} onNo={handleMusicNo} token={token} spotifyUri={spotifyUri}/>
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Link to="/">
@@ -109,6 +131,13 @@ const CasualStudy = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+      <div className="fixed right-10 bottom-10 z-50">
+        <SpotifyPlayer
+          token={token}
+          playId={spotifyUri}
+          isPlaying={shouldPlayMusic}
+        />
       </div>
     </div>
   );
